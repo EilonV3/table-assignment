@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer } from "react";
-import { getTableData, saveData } from "../../api/dataApi.ts";
+import {getTableData, removeRows, saveData} from "../../api/dataApi.ts";
 import { TableData } from "../../types";
 import styles from './Table.module.css';
 import EditCell from "../edit-cell/EditCell.tsx";
@@ -59,22 +59,35 @@ export const Table: React.FC = () => {
     }, [tableData, groupColumn, visibleColumns, searchTerm]);
 
     const handleSelectRow = (rowId: string) => {
-        dispatch({ type: 'SELECT_ROW', rowId });
+        dispatch({
+            type: 'SELECT_ROW', rowId,
+            rowIds: []
+        });
     };
 
     const handleDeselectRow = (rowId: string) => {
-        dispatch({ type: 'DESELECT_ROW', rowId });
+        dispatch({
+            type: 'DESELECT_ROW', rowId,
+            rowIds: []
+        });
     };
 
     const handleSelectAll = () => {
         if (tableData) {
             const allRowIds = tableData.data.map(row => row.id);
-            dispatch({ type: 'SELECT_ALL', rowIds: allRowIds });
+            dispatch({
+                type: 'SELECT_ALL', rowIds: allRowIds,
+                rowId: ""
+            });
         }
     };
 
     const handleClearSelection = () => {
-        dispatch({ type: 'CLEAR_SELECTION' });
+        dispatch({
+            type: 'CLEAR_SELECTION',
+            rowId: "",
+            rowIds: []
+        });
     };
 
     const handleCellEdit = (rowId: string, colId: string, newValue: string | number | boolean) => {
@@ -86,9 +99,11 @@ export const Table: React.FC = () => {
                 data: [
                     ...tableData.data.slice(0, rowIndex),
                     {
+                        // @ts-ignore
                         ...tableData.data[rowIndex],
                         [colId]: newValue
                     },
+                    // @ts-ignore
                     ...tableData.data.slice(rowIndex + 1)
                 ]
             };
@@ -170,9 +185,19 @@ export const Table: React.FC = () => {
 
     if (!tableData) return <h1> Loading Data! </h1>;
 
+    const handleRemoveSelectedRows = () => {
+        if (selectedRows.size > 0) {
+            const updatedTableData = removeRows(Array.from(selectedRows));
+            setTableData(updatedTableData);
+            setGroupedData(groupByColumn(updatedTableData, groupColumn));
+            handleClearSelection();
+        }
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.buttoncontainer}>
+                {selectedRows.size > 0 && <button onClick={handleRemoveSelectedRows}>{selectedRows.size > 1 ? 'Remove Selected Rows': 'Remove Selected Row'}</button>}
                 <CustomDropdown
                     columns={tableData.columns}
                     onSelectColumn={handleColumnSelect}

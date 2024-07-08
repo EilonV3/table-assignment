@@ -1,10 +1,11 @@
 import { fakeTableData } from '../fake-data/fakeData.ts';
-import { TableData, RowData } from '../types';
+import { TableData } from '../types';
+
 const DATA_STORAGE_KEY = 'tableStorageKey';
 
 export const loadData = () => {
     const data = localStorage.getItem(DATA_STORAGE_KEY);
-    return data ? JSON.parse(data): initData();
+    return data ? JSON.parse(data) : initData();
 };
 
 export const initData = () => {
@@ -19,6 +20,16 @@ export const saveData = (data: TableData) => {
 
 export const clearData = () => {
     localStorage.removeItem(DATA_STORAGE_KEY);
-}
+};
 
-export const getTableData = (): TableData => loadData()
+export const getTableData = (): TableData => loadData();
+
+export const removeRows = (rowIds: string[]) => {
+    const data = loadData();
+    const updatedData = {
+        ...data,
+        data: data.data.filter((row: any) => !rowIds.includes(row.id))
+    };
+    saveData(updatedData);
+    return updatedData;
+};
