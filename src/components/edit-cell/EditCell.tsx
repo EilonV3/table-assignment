@@ -48,12 +48,13 @@ const EditCell: React.FC<EditCellProps> = ({ value, onSaveEdit, type, options })
                             onBlur={handleSave}
                             autoFocus
                             className={styles.editInput}
+                            onKeyDown={handleInputKeyDown}
                         >
                             <option value="true">True</option>
                             <option value="false">False</option>
                         </select>
                     ) : type === 'select' ? (
-                        <select value={editedValue as string} onChange={handleInputChange} onBlur={handleSave} className={styles.editInput} autoFocus>
+                        <select value={editedValue as string} onChange={handleInputChange} onBlur={handleSave} className={styles.editInput} onKeyDown={handleInputKeyDown} autoFocus>
                             {options?.map(option => (
                                 <option key={option} value={option}>
                                     {option}
