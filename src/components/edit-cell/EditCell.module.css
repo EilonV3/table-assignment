@@ -1,0 +1,43 @@
+/* EditCell.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+.editableCell {
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.editableCell.editing {
+    animation: backgroundMove 1.2s infinite alternate;
+}
+
+@keyframes backgroundMove {
+    0% {
+        background-color: midnightblue;
+    }
+    100% {
+        background-color: #6a5acd;
+    }
+}
+
+.cellContent {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.editInput {
+    width: 100%;
+    padding: 5px;
+    font-family: 'Poppins', sans-serif;
+    border: 1px solid #e0e0e0;
+    color: white;
+    border-radius: 4px;
+    background: transparent;
+}
+
+.editInput:focus {
+    outline: none;
+    border-color: #6a5acd;
+    box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.3);
+}
