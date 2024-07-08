@@ -117,12 +117,31 @@ button {
     background-color: midnightblue;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-width: 8rem;
+    min-width: 4rem;
+    margin: 0.75rem;
+}
+
+.selectPagination {
+    border-radius: 8px;
+    border: 1px solid midnightblue;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    background-color-color: #ffffff;
+    color: midnightblue;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 4rem;
     margin: 0.75rem;
 }
 
 .selectDropdown:hover {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.selectPagination:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background-color: #cccccc;
 }
 input[type="checkbox"] {
     accent-color: #6a5acd;

@@ -3,7 +3,7 @@ import { getTableData, saveData } from "../../api/dataApi.ts";
 import { TableData } from "../../types";
 import styles from './Table.module.css';
 import EditCell from "../edit-cell/EditCell.tsx";
-import CustomDropdown from "../custom-dropdown/CustomDropdown.tsx"; // Adjust the path as needed
+import CustomDropdown from "../custom-dropdown/CustomDropdown.tsx";
 
 const selectedRowsReducer = (state: Set<string>, action: { type: any; rowId: string; rowIds: any[]; }): Set<string> => {
     const newState = new Set(state);
@@ -34,6 +34,8 @@ export const Table: React.FC = () => {
     const [groupColumn, setGroupColumn] = useState<string>('active');
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [isGrouping, setIsGrouping] = useState<boolean>(false);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
     useEffect(() => {
         const data = getTableData();
@@ -140,6 +142,32 @@ export const Table: React.FC = () => {
         }, {} as { [key: string]: TableData });
     };
 
+    const filteredData = tableData ? {
+        columns: tableData.columns,
+        data: tableData.data.filter(row => {
+            return visibleColumns.some(colId => {
+                const cellValue = row[colId]?.toString().toLowerCase();
+                return cellValue && cellValue.includes(searchTerm.toLowerCase());
+            });
+        })
+    } : null;
+
+    const totalPages = filteredData ? Math.ceil(filteredData.data.length / rowsPerPage) : 1;
+
+    const paginatedData = filteredData ? {
+        columns: filteredData.columns,
+        data: filteredData.data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    } : null;
+
+    const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setRowsPerPage(Number(e.target.value));
+        setCurrentPage(1);
+    };
+
+    const handlePageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrentPage(Number(e.target.value));
+    };
+
     if (!tableData) return <h1> Loading Data! </h1>;
 
     return (
@@ -159,11 +187,12 @@ export const Table: React.FC = () => {
                 <button onClick={() => setIsGrouping(!isGrouping)}>
                     {isGrouping ? 'Disable Grouping' : 'Enable Grouping'}
                 </button>
-                {isGrouping && <select value={groupColumn} onChange={handleGroupColumnChange} className={styles.selectDropdown}>
-                    {tableData.columns.map(col => (
-                        <option key={col.id} value={col.id}>{col.title}</option>
-                    ))}
-                </select>}
+                {isGrouping &&
+                    <select value={groupColumn} onChange={handleGroupColumnChange} className={styles.selectDropdown}>
+                        {tableData.columns.map(col => (
+                            <option key={col.id} value={col.id}>{col.title}</option>
+                        ))}
+                    </select>}
                 <input
                     type="text"
                     placeholder="Search..."
@@ -226,12 +255,7 @@ export const Table: React.FC = () => {
                                 </tr>
                             ))}
                         </React.Fragment>
-                    )) : tableData.data.filter(row => {
-                        return visibleColumns.some(colId => {
-                            const cellValue = row[colId]?.toString().toLowerCase();
-                            return cellValue && cellValue.includes(searchTerm.toLowerCase());
-                        });
-                    }).map((row) => (
+                    )) : paginatedData?.data.map((row) => (
                         <tr key={row.id}>
                             <td>
                                 <input
@@ -258,7 +282,23 @@ export const Table: React.FC = () => {
                     ))}
                     </tbody>
                 </table>
-            </div>}
+            </div>
+            }
+            <div className={styles.buttoncontainer}>
+                <label>Rows per page:</label>
+                <select value={rowsPerPage} onChange={handleRowsPerPageChange}
+                        className={styles.selectPagination}>
+                    {[10, 25, 50].map(num => (
+                        <option key={num} value={num}>{num}</option>
+                    ))}
+                </select>
+                <label>Page:</label>
+                <select value={currentPage} onChange={handlePageChange} className={styles.selectPagination}>
+                    {Array.from({length: totalPages}, (_, i) => i + 1).map(page => (
+                        <option key={page} value={page}>{page}</option>
+                    ))}
+                </select>
+            </div>
         </div>
     );
 };
