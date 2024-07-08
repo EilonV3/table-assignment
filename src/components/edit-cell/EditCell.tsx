@@ -27,6 +27,16 @@ const EditCell: React.FC<EditCellProps> = ({ value, onSaveEdit, type, options })
         setEditedValue(newValue);
     };
 
+    const handleInputKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSave();
+        }
+    };
+
+    const handleInputBlur = () => {
+        handleSave();
+    };
+
     return (
         <td className={`${styles.editableCell} ${editMode ? styles.editing : ''}`} onClick={handleEditStart}>
             <div className={styles.cellContent}>
@@ -55,7 +65,8 @@ const EditCell: React.FC<EditCellProps> = ({ value, onSaveEdit, type, options })
                             type={type}
                             value={editedValue as string}
                             onChange={handleInputChange}
-                            onBlur={handleSave}
+                            onBlur={handleInputBlur}
+                            onKeyDown={handleInputKeyDown}
                             autoFocus
                             className={styles.editInput}
                         />
