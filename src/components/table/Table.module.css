@@ -128,7 +128,7 @@ button {
     font-size: 1em;
     font-weight: 500;
     font-family: 'Poppins', sans-serif;
-    background-color-color: #ffffff;
+    background-color: #ffffff;
     color: midnightblue;
     cursor: pointer;
     transition: all 0.3s ease;
